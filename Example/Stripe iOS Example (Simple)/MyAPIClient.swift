@@ -10,28 +10,28 @@ import Foundation
 import Stripe
 
 class MyAPIClient: NSObject, STPBackendAPIAdapter {
-
+    
     static let sharedClient = MyAPIClient()
     let session: URLSession
     var baseURLString: String? = nil
     var defaultSource: STPCard? = nil
     var sources: [STPCard] = []
-
+    
     override init() {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 5
         self.session = URLSession(configuration: configuration)
         super.init()
     }
-
+    
     func decodeResponse(_ response: URLResponse?, error: NSError?) -> NSError? {
         if let httpResponse = response as? HTTPURLResponse
-            , httpResponse.statusCode != 200 {
+            , httpResponse.statusCode != 201 && httpResponse.statusCode != 200  {
             return error ?? NSError.networkingError(httpResponse.statusCode)
         }
         return error
     }
-
+    
     func completeCharge(_ result: STPPaymentResult, amount: Int, completion: @escaping STPErrorBlock) {
         guard let baseURLString = baseURLString, let baseURL = URL(string: baseURLString) else {
             let error = NSError(domain: StripeDomain, code: 50, userInfo: [
@@ -40,13 +40,17 @@ class MyAPIClient: NSObject, STPBackendAPIAdapter {
             completion(error)
             return
         }
-        let path = "charge"
+        //let path = "charge"
+        let path = "2/orders/2671073/confirm"
         let url = baseURL.appendingPathComponent(path)
         let params: [String: AnyObject] = [
-            "source": result.source.stripeID as AnyObject,
-            "amount": amount as AnyObject
+            "source" :  "ios app"  as AnyObject
+            //"source": result.source.stripeID as AnyObject,
+            //"amount": amount as AnyObject
         ]
-        let request = URLRequest.request(url, method: .POST, params: params)
+        var request = URLRequest.request(url, method: .PUT, params: [:])
+        request.setValue("kq-K3RYNtWprasxNEH5x", forHTTPHeaderField: "X-User-Token")
+        request.setValue("test4@farmdrop.com", forHTTPHeaderField: "X-User-Email")
         let task = self.session.dataTask(with: request) { (data, urlResponse, error) in
             DispatchQueue.main.async {
                 if let error = self.decodeResponse(urlResponse, error: error as NSError?) {
@@ -63,7 +67,7 @@ class MyAPIClient: NSObject, STPBackendAPIAdapter {
         guard let key = Stripe.defaultPublishableKey() , !key.contains("#") else {
             let error = NSError(domain: StripeDomain, code: 50, userInfo: [
                 NSLocalizedDescriptionKey: "Please set stripePublishableKey to your account's test publishable key in CheckoutViewController.swift"
-            ])
+                ])
             completion(nil, error)
             return
         }
@@ -73,9 +77,13 @@ class MyAPIClient: NSObject, STPBackendAPIAdapter {
             completion(customer, nil)
             return
         }
-        let path = "/customer"
+        let path = "1/stripe_payment_sources"
         let url = baseURL.appendingPathComponent(path)
-        let request = URLRequest.request(url, method: .GET, params: [:])
+        
+        var request = URLRequest.request(url, method: .GET, params: [:])
+        request.setValue("kq-K3RYNtWprasxNEH5x", forHTTPHeaderField: "X-User-Token")
+        request.setValue("test4@farmdrop.com", forHTTPHeaderField: "X-User-Email")
+        
         let task = self.session.dataTask(with: request) { (data, urlResponse, error) in
             DispatchQueue.main.async {
                 let deserializer = STPCustomerDeserializer(data: data, urlResponse: urlResponse, error: error)
@@ -98,12 +106,19 @@ class MyAPIClient: NSObject, STPBackendAPIAdapter {
             completion(nil)
             return
         }
-        let path = "/customer/default_source"
+        let path = "1/stripe_payment_sources"
         let url = baseURL.appendingPathComponent(path)
         let params = [
-            "source": source.stripeID,
-        ]
-        let request = URLRequest.request(url, method: .POST, params: params as [String : AnyObject])
+            "default_source": source.stripeID,
+            ]
+        var request = URLRequest.request(url, method: .POST, params: [:])
+        request.setValue("kq-K3RYNtWprasxNEH5x", forHTTPHeaderField: "X-User-Token")
+        request.setValue("test4@farmdrop.com", forHTTPHeaderField: "X-User-Email")
+        request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        
+        let jsonData = try? JSONSerialization.data(withJSONObject: params, options: .prettyPrinted)
+        request.httpBody = jsonData
+        
         let task = self.session.dataTask(with: request) { (data, urlResponse, error) in
             DispatchQueue.main.async {
                 if let error = self.decodeResponse(urlResponse, error: error as NSError?) {
@@ -125,13 +140,25 @@ class MyAPIClient: NSObject, STPBackendAPIAdapter {
             completion(nil)
             return
         }
-        let path = "/customer/sources"
+        //let path = "/customer/sources"
+        let path = "1/stripe_payment_sources"
         let url = baseURL.appendingPathComponent(path)
-        let params = [
-            "source": source.stripeID,
+        let params: Dictionary<String, AnyObject> = [
+            "token": source.stripeID as AnyObject,
             ]
-        let request = URLRequest.request(url, method: .POST, params: params as [String : AnyObject])
+        var request = URLRequest.request(url, method: .POST, params: params)
+        request.setValue("kq-K3RYNtWprasxNEH5x", forHTTPHeaderField: "X-User-Token")
+        request.setValue("test4@farmdrop.com", forHTTPHeaderField: "X-User-Email")
         let task = self.session.dataTask(with: request) { (data, urlResponse, error) in
+            
+            if let d = data {
+                let json = try? JSONSerialization.jsonObject(with: d, options: .mutableContainers)
+                print("json: \(json)")
+            }
+            
+            
+            //id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+            
             DispatchQueue.main.async {
                 if let error = self.decodeResponse(urlResponse, error: error as NSError?) {
                     completion(error)
@@ -142,5 +169,5 @@ class MyAPIClient: NSObject, STPBackendAPIAdapter {
         }
         task.resume()
     }
-
+    
 }

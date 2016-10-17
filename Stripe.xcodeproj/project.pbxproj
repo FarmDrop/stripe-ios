@@ -951,8 +951,8 @@
 		F1C578F01D651AB200912EAE /* stp_card_applepay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = stp_card_applepay.png; sourceTree = "<group>"; };
 		F1D64B271D8767FC001CDB7C /* STPWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STPWebViewController.h; sourceTree = "<group>"; };
 		F1D64B281D8767FC001CDB7C /* STPWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPWebViewController.m; sourceTree = "<group>"; };
-		F1D777BF1D81DD520076FA19 /* STPStringUtilsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPStringUtilsTest.m; sourceTree = "<group>"; };
 		F1D64B2D1D87686E001CDB7C /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		F1D777BF1D81DD520076FA19 /* STPStringUtilsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPStringUtilsTest.m; sourceTree = "<group>"; };
 		FAFC12C516E5767F0066297F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -1126,11 +1126,11 @@
 				04CDB4A91A5F30A700B854EE /* Stripe.h */,
 				04A4883B1CA3568800506E53 /* STPBlocks.h */,
 				F132DFE21D51372A002FF5B7 /* STPWeakStrongMacros.h */,
+				04633B061CD44F47009D4FB5 /* STPAPIClient+ApplePay.h */,
 				04CDB4C21A5F30A700B854EE /* STPAPIClient.h */,
 				04CDB4C31A5F30A700B854EE /* STPAPIClient.m */,
 				04633B081CD44F6C009D4FB5 /* PKPayment+Stripe.h */,
 				04633B091CD44F6C009D4FB5 /* PKPayment+Stripe.m */,
-				04633B061CD44F47009D4FB5 /* STPAPIClient+ApplePay.h */,
 				04633B041CD44F1C009D4FB5 /* STPAPIClient+ApplePay.m */,
 				C124A16E1CCA968B007D42EE /* STPAnalyticsClient.h */,
 				C124A16F1CCA968B007D42EE /* STPAnalyticsClient.m */,
