@@ -318,18 +318,20 @@
             PKPaymentAuthorizationViewController *paymentAuthVC;
             paymentAuthVC = [PKPaymentAuthorizationViewController
                              stp_controllerWithPaymentRequest:paymentRequest
-                                                    apiClient:self.apiClient
-                                              onTokenCreation:applePayTokenHandler
-                                                     onFinish:^(STPPaymentStatus status, NSError * _Nullable error) {
-                                                         [self.hostViewController dismissViewControllerAnimated:YES completion:^{
-                                                             [self.delegate paymentContext:self
-                                                                           didFinishWithStatus:status
-                                                                                         error:error];
-                                                         }];
-                                                     }];
+                             apiClient:self.apiClient
+                             paymentContext:self
+                             onTokenCreation:applePayTokenHandler
+                             onAddressValidation:self.isValidPostcodeBlock
+                             onFinish:^(STPPaymentStatus status, NSError * _Nullable error) {
+                                 [self.hostViewController dismissViewControllerAnimated:YES completion:^{
+                                     [self.delegate paymentContext:self
+                                               didFinishWithStatus:status
+                                                             error:error];
+                                 }];
+                             }];
             [self.hostViewController presentViewController:paymentAuthVC
-                                                      animated:YES
-                                                    completion:nil];
+                                                  animated:YES
+                                                completion:nil];
         }
     }]onFailure:^(NSError *error) {
         STRONG(self);

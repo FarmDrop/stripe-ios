@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  The amount of money you're requesting from the user, in the smallest currency unit for the selected currency. For example, to indicate $10 USD, use 1000 (i.e. 1000 cents). For more information see https://stripe.com/docs/api#charge_object-amount . This value must be present and greater than zero in order for Apple Pay to be automatically enabled.
  *
- *  @note You should only set either this or `paymentSummaryItems`, not both. The other will be automatically calculated on demand using your `paymentCurrency`. 
+ *  @note You should only set either this or `paymentSummaryItems`, not both. The other will be automatically calculated on demand using your `paymentCurrency`.
  */
 @property(nonatomic)NSInteger paymentAmount;
 
@@ -114,17 +114,18 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @note You should only set either this or `paymentAmount`, not both. The other will be automatically calculated on demand using your `paymentCurrency.`
  *
- *  @warning `PKPaymentSummaryItem` is only available in iOS8+. If you support iOS 7 you should do a runtime availability check before accessing or setting this property. 
+ *  @warning `PKPaymentSummaryItem` is only available in iOS8+. If you support iOS 7 you should do a runtime availability check before accessing or setting this property.
  */
 @property(nonatomic, copy)NSArray<PKPaymentSummaryItem *> *paymentSummaryItems NS_AVAILABLE_IOS(8_0);
 
 
 /**
-  *  If you support Apple Pay, you can optionally set this field with the required capabilities of an Apple Pay shipping address, that
-     you need in order to process an Apple Pay transaction.
-  */
+ *  If you support Apple Pay, you can optionally set this field with the required capabilities of an Apple Pay shipping address, that
+ you need in order to process an Apple Pay transaction.
+ */
 @property(nonatomic) PKAddressField requiredShippingAddressFields;
-    
+
+@property (nonatomic, copy) BOOL (^isValidPostcodeBlock)(NSString *postCode);
 
 /**
  *  The presentation style used for all view controllers presented modally by the context.

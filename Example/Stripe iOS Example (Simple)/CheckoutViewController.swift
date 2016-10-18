@@ -85,6 +85,10 @@ class CheckoutViewController: UIViewController, STPPaymentContextDelegate {
         paymentContext.paymentAmount = price
         paymentContext.paymentCurrency = self.paymentCurrency
         
+        paymentContext.isValidPostcodeBlock = { postcode in
+            return false
+        }
+        
         self.paymentContext = paymentContext
         super.init(nibName: nil, bundle: nil)
         self.paymentContext.delegate = self

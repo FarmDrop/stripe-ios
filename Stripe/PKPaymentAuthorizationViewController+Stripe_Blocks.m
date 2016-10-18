@@ -18,6 +18,8 @@ static char kSTPBlockBasedApplePayDelegateAssociatedObjectKey;
 @property (nonatomic) STPAPIClient *apiClient;
 @property (nonatomic, copy) STPApplePayTokenHandlerBlock onTokenCreation;
 @property (nonatomic, copy) STPPaymentCompletionBlock onFinish;
+@property (nonatomic, copy) PostcodeValidationBlock onAddressValidation;
+@property (nonatomic, strong) STPPaymentContext *paymentContext;
 @property (nonatomic) NSError *lastError;
 @property (nonatomic) BOOL didSucceed;
 @end
@@ -45,6 +47,22 @@ typedef void (^STPPaymentAuthorizationStatusCallback)(PKPaymentAuthorizationStat
     }];
 }
 
+- (void)paymentAuthorizationViewController:(__unused PKPaymentAuthorizationViewController *)controller didSelectShippingContact:(PKContact *)contact completion:(void (^)(PKPaymentAuthorizationStatus, NSArray<PKShippingMethod *> * _Nonnull, NSArray<PKPaymentSummaryItem *> * _Nonnull))completion
+{
+    // Address validation not enabled, so assume correct.
+    if (self.paymentContext.requiredShippingAddressFields == PKAddressFieldNone ||
+        self.onAddressValidation == nil) {
+        completion(PKPaymentAuthorizationStatusSuccess, @[], self.paymentContext.paymentSummaryItems);
+    }
+    
+    if (!self.onAddressValidation(contact.postalAddress.postalCode)) {
+        completion(PKPaymentAuthorizationStatusInvalidShippingPostalAddress, @[], self.paymentContext.paymentSummaryItems);
+    } else {
+        completion(PKPaymentAuthorizationStatusSuccess, @[], self.paymentContext.paymentSummaryItems);
+    }
+    
+}
+
 - (void)paymentAuthorizationViewControllerDidFinish:(__unused PKPaymentAuthorizationViewController *)controller {
     if (self.didSucceed) {
         self.onFinish(STPPaymentStatusSuccess, nil);
@@ -67,12 +85,16 @@ typedef void (^STPPaymentAuthorizationStatusCallback)(PKPaymentAuthorizationStat
 
 + (instancetype)stp_controllerWithPaymentRequest:(PKPaymentRequest *)paymentRequest
                                        apiClient:(STPAPIClient *)apiClient
-                             onTokenCreation:(STPApplePayTokenHandlerBlock)onTokenCreation
-                                    onFinish:(STPPaymentCompletionBlock)onFinish {
+                                  paymentContext:(STPPaymentContext *)paymentContext
+                                 onTokenCreation:(STPApplePayTokenHandlerBlock)onTokenCreation
+                             onAddressValidation:(PostcodeValidationBlock)onAddressValidation
+                                        onFinish:(STPPaymentCompletionBlock)onFinish {
     STPBlockBasedApplePayDelegate *delegate = [STPBlockBasedApplePayDelegate new];
     delegate.apiClient = apiClient;
     delegate.onTokenCreation = onTokenCreation;
     delegate.onFinish = onFinish;
+    delegate.onAddressValidation = onAddressValidation;
+    delegate.paymentContext = paymentContext;
     PKPaymentAuthorizationViewController *viewController = [[self alloc] initWithPaymentRequest:paymentRequest];
     viewController.delegate = delegate;
     objc_setAssociatedObject(viewController, &kSTPBlockBasedApplePayDelegateAssociatedObjectKey, delegate, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
