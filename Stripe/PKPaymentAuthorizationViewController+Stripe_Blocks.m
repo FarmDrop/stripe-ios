@@ -43,11 +43,13 @@ typedef void (^STPPaymentAuthorizationStatusCallback)(PKPaymentAuthorizationStat
             }
             self.didSucceed = YES;
             completion(PKPaymentAuthorizationStatusSuccess);
-            
-            NSDictionary *dic = @{@"shippingContact" : payment.shippingContact};
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"ApplePayPaymentSuccess"
-                                                                object:self userInfo:dic];
+           
+            if (payment.shippingContact) {
+                NSDictionary *dic = @{@"shippingContact" : payment.shippingContact};
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"ApplePayPaymentSuccess"
+                                                                    object:self userInfo:dic];
+            }
         });
     }];
 }
