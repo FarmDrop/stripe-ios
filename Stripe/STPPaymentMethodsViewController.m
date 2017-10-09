@@ -90,6 +90,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.view.accessibilityIdentifier = @"PaymentMethodScreen";
     STPPaymentActivityIndicatorView *activityIndicator = [STPPaymentActivityIndicatorView new];
     activityIndicator.animating = YES;
     [self.view addSubview:activityIndicator];

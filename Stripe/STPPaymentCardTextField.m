@@ -95,6 +95,7 @@ CGFloat const STPPaymentCardTextFieldDefaultPadding = 13;
     self.brandImageView = brandImageView;
     
     STPFormTextField *numberField = [self buildTextField];
+    numberField.accessibilityIdentifier = @"CardDetailsScreen";
     numberField.autoFormattingBehavior = STPFormTextFieldAutoFormattingBehaviorCardNumbers;
     numberField.tag = STPCardFieldTypeNumber;
     numberField.accessibilityLabel = NSLocalizedString(@"card number", @"accessibility label for text field");

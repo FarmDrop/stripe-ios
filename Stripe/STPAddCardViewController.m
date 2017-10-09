@@ -113,6 +113,7 @@ static NSInteger STPPaymentCardRememberMeSection = 3;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.accessibilityIdentifier = @"CardDetailsScreen";
     self.automaticallyAdjustsScrollViewInsets = NO;
     UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     tableView.sectionHeaderHeight = 30;
